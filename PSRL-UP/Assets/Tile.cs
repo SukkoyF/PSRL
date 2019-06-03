@@ -8,6 +8,16 @@ public class Tile : EventTrigger
     public int x;
     public int y;
 
+    public void LightUp()
+    {
+        GetComponentsInChildren<SpriteRenderer>()[1].enabled = true;
+    }
+
+    public void LightOff()
+    {
+        GetComponentsInChildren<SpriteRenderer>()[1].enabled = false;
+    }
+
     public void SetGridPos(int _x,int _y)
     {
         x = _x;
@@ -16,6 +26,6 @@ public class Tile : EventTrigger
 
     public override void OnPointerDown(PointerEventData eventData)
     {
-        FindObjectOfType<TileActions>().MoveCharacter(transform,x,y);
+        FindObjectOfType<TileActions>().TileClicked(transform,x,y);
     }
 }
