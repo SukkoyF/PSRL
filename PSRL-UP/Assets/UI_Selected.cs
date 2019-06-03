@@ -10,6 +10,8 @@ public class UI_Selected : MonoBehaviour
 
     public Text mpDisplay;
 
+    public GameObject attackShutter;
+
     private void Awake()
     {
         panel.SetActive(false);    
@@ -20,6 +22,15 @@ public class UI_Selected : MonoBehaviour
         if(panel.activeInHierarchy && GameManager.selected != null)
         {
             mpDisplay.text = "MP : " + GameManager.selected.GetComponent<Entity>().curr_MP + " / " + GameManager.selected.GetComponent<Entity>().maxMP;
+
+            if(GameManager.selected.GetComponent<Entity>().attacked == true)
+            {
+                attackShutter.SetActive(true);
+            }
+            else
+            {
+                attackShutter.SetActive(false);
+            }
         }
     }
 

@@ -22,6 +22,8 @@ public class Entity : MonoBehaviour
     {
         health -= damage;
 
+        PopUpTextManager.SpawnPopUpText(damage.ToString(), transform.position);
+
         if(health <=0)
         {
             Destroy(gameObject);
