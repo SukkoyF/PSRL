@@ -44,7 +44,7 @@ public class GameManager : MonoBehaviour
 
         foreach(Entity e in entities)
         {
-            e.curr_MP = e.maxMP;
+            e.ResetTurn();
         }
         _MM.UnlitTiles();
         selected = null;

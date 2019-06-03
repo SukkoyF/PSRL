@@ -17,13 +17,14 @@ public class Attack : MonoBehaviour
 
     public List<Node> GetTargetables()
     {
-        List<Node> inRange = _MM.GetInRange(_E.curr_Node, attackRange);
+        List<Node> inRange = _MM.GetInRange(_E.curr_Node, attackRange,AimingMode.line);
 
         return inRange;
     }
 
     public void Strike(Node target)
     {
+        _E.attacked = true;
         target.entity.GetComponent<Entity>().Damage(1);
     }
 }

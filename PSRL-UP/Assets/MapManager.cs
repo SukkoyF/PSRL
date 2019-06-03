@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum AimingMode { notSpecified,line,diagonal}
+
 public class MapManager : MonoBehaviour
 {
     public GameObject tile;
-    public Transform player;
-
-    public GameObject charac;
 
     public List<GameObject> toSpawn;
 
@@ -109,7 +108,7 @@ public class MapManager : MonoBehaviour
         return tiles[x, y];
     }
 
-    public List<Node> GetInRange(Node startPoint,int distance)
+    public List<Node> GetInRange(Node startPoint,int distance,AimingMode am)
     {
         List<Node> toReturn = new List<Node>();
 
@@ -120,6 +119,18 @@ public class MapManager : MonoBehaviour
                 if(GetDistance(startPoint,tiles[x,y]) <= distance)
                 {
                     toReturn.Add(tiles[x, y]);
+                }
+            }
+        }
+
+        if(am == AimingMode.line)
+        {
+            for(int i =0;i < toReturn.Count;i++)
+            {
+                if(toReturn[i].xPos != startPoint.xPos && toReturn[i].yPos != startPoint.yPos)
+                {
+                    toReturn.RemoveAt(i);
+                    i--;
                 }
             }
         }

@@ -100,6 +100,7 @@ public class TileActions : MonoBehaviour
         {
             if(clicked.entity != null)
             {
+                DisableAttacking();
                 GameManager.selected.GetComponent<Attack>().Strike(clicked);
             }
         }
@@ -107,17 +108,20 @@ public class TileActions : MonoBehaviour
 
     public void SetAttacking()
     {
-        attacking = true;
-
-        _MM.UnlitTiles();
-
-        List<Node> inRange = GameManager.selected.GetComponent<Attack>().GetTargetables();
-
-        foreach(Node n in inRange)
+        if(GameManager.selected.GetComponent<Entity>().attacked == false)
         {
-            if(n.tile!= null)
+            attacking = true;
+
+            _MM.UnlitTiles();
+
+            List<Node> inRange = GameManager.selected.GetComponent<Attack>().GetTargetables();
+
+            foreach (Node n in inRange)
             {
-                n.LightUp();
+                if (n.tile != null)
+                {
+                    n.LightUp();
+                }
             }
         }
     }

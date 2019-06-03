@@ -11,9 +11,11 @@ public class Entity : MonoBehaviour
     public int maxMP;
     public int curr_MP;
 
+    public bool attacked;
+
     void Awake()
     {
-        curr_MP = maxMP;
+        ResetTurn();
     }
 
     public void Damage(int damage)
@@ -24,5 +26,11 @@ public class Entity : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    public void ResetTurn()
+    {
+        curr_MP = maxMP;
+        attacked = false;
     }
 }
