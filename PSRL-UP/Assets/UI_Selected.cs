@@ -25,7 +25,7 @@ public class UI_Selected : MonoBehaviour
 
     public void Open()
     {
-        portrait.sprite = GameManager.selected.GetComponent<SpriteRenderer>().sprite;
+        portrait.sprite = GameManager.selected.GetComponentInChildren<SpriteRenderer>().sprite;
 
         panel.SetActive(true);
     }
