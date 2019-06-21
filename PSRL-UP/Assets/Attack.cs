@@ -5,9 +5,10 @@ using UnityEngine;
 public class Attack : MonoBehaviour
 {
     public int attackRange;
+    public bool allowAttackOnEmpty;
 
-    Entity _E;
-    MapManager _MM;
+    protected Entity _E;
+    protected MapManager _MM;
 
     private void Awake()
     {
@@ -17,14 +18,16 @@ public class Attack : MonoBehaviour
 
     public List<Node> GetTargetables()
     {
-        List<Node> inRange = _MM.GetInRange(_E.curr_Node, attackRange,AimingMode.line);
-
-        return inRange;
+        return GetTargetablesAt(_E.curr_Node);
     }
 
-    public void Strike(Node target)
+    public virtual void Strike(Node target)
     {
-        _E.attacked = true;
-        target.entity.GetComponent<Entity>().Damage(1);
+  
+    }
+
+    public virtual List<Node> GetTargetablesAt(Node n)
+    {
+        return new List<Node>();
     }
 }

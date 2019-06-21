@@ -9,8 +9,12 @@ public class UI_Selected : MonoBehaviour
     public Image portrait;
 
     public Text mpDisplay;
+    public Text hpDisplay;
 
     public GameObject attackShutter;
+    public Image attackLine;
+    public Color white;
+    public Color green;
 
     private void Awake()
     {
@@ -21,15 +25,18 @@ public class UI_Selected : MonoBehaviour
     {
         if(panel.activeInHierarchy && GameManager.selected != null)
         {
-            mpDisplay.text = "MP : " + GameManager.selected.GetComponent<Entity>().curr_MP + " / " + GameManager.selected.GetComponent<Entity>().maxMP;
+            mpDisplay.text = "mp : " + GameManager.selected.GetComponent<Entity>().curr_MP + " / " + GameManager.selected.GetComponent<Entity>().maxMP;
+            hpDisplay.text = "hp : " + GameManager.selected.GetComponent<Entity>().health;
 
             if(GameManager.selected.GetComponent<Entity>().attacked == true)
             {
                 attackShutter.SetActive(true);
+                attackLine.color = green;
             }
             else
             {
                 attackShutter.SetActive(false);
+                attackLine.color = white;
             }
         }
     }

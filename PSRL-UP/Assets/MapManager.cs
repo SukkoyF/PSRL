@@ -3,30 +3,35 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum AimingMode { notSpecified,line,diagonal}
+public enum Direction { Up,Down,Left,Right,NotSpecified}
 
 public class MapManager : MonoBehaviour
 {
     public GameObject tile;
 
-    public List<GameObject> toSpawn;
-
     public Node[,] tiles;
     public int width;
     public int height;
 
+
+    PathFinding _PF;
+
     private void Awake()
     {
+        _PF = FindObjectOfType<PathFinding>();
         tiles = new Node[width, height];
 
         for (int w = 0; w < width; w++)
         {
             for (int h = 0; h < height; h++)
             {
-                if (Random.value > .3f)
+                if(w == width -1 || h == height -1)
                 {
-                    GameObject instance = Instantiate(tile, new Vector2((w * .5f) + h * -0.5f, (w * .25f) + h * .25f), Quaternion.identity);
-                    tiles[w, h] = new Node(w, h, true, instance);
-                    instance.GetComponent<Tile>().SetGridPos(w, h);
+                    SpawnTile(w, h);
+                }
+                else if (Random.value > .3f)
+                {
+                    SpawnTile(w, h);
                 }
                 else
                 {
@@ -34,6 +39,41 @@ public class MapManager : MonoBehaviour
                 }
             }
         }
+
+        PurgeTiles();
+    }
+
+    void PurgeTiles()
+    {
+        for(int w =0;w < width -1;w++)
+        {
+            for(int h = 0;h < height-1;h++)
+            {
+                Node curr = tiles[w, h];
+
+                if(_PF.IsReachable(tiles[width-1,height-1],curr) == false)
+                {
+                    if(curr.tile != null)
+                    {
+                        Destroy(curr.tile);
+                    }
+
+                    curr.walkAble = false;
+                }
+            }
+        }
+    }
+
+    void SpawnTile(int w,int h)
+    {
+        GameObject instance = Instantiate(tile, new Vector2((w * .5f) + h * -0.5f, (w * .25f) + h * .25f), Quaternion.identity, transform);
+        tiles[w, h] = new Node(w, h, true, instance);
+        instance.GetComponent<Tile>().SetGridPos(w, h);
+    }
+
+    public void SpawnCreatures(List<GameObject> toSpawn,Owner toSet)
+    {
+        int i = 0;
 
         foreach (GameObject g in toSpawn)
         {
@@ -45,19 +85,37 @@ public class MapManager : MonoBehaviour
                 int y = Random.Range(0, height);
                 chosen = tiles[x, y];
 
-                if(chosen != null && chosen.entity == null && chosen.walkAble == true)
+                if (chosen != null && chosen.entity == null && chosen.walkAble == true)
                 {
 
                 }
                 else
                 {
-                    chosen = null;
+                    for (int xx = 0; xx < width; xx++)
+                    {
+                        for (int yy = 0; yy < height; yy++)
+                        {
+                            if (tiles[xx, yy].walkAble == true && tiles[xx, yy].entity == null)
+                            {
+                                chosen = null;
+                            }
+                        }
+                    }
                 }
+            }
+
+            if(chosen.entity != null || chosen.walkAble == false)
+            {
+                break;
             }
 
             GameObject instanceTwo = Instantiate(g, chosen.tile.transform.position, Quaternion.identity);
             chosen.entity = instanceTwo;
             instanceTwo.GetComponent<Entity>().curr_Node = chosen;
+            instanceTwo.GetComponent<Entity>().myOwner = toSet;
+
+            instanceTwo.name = instanceTwo.name + i.ToString();
+            i++;
         }
     }
 
@@ -71,7 +129,6 @@ public class MapManager : MonoBehaviour
                 {
                     tiles[x, y].tile.GetComponent<Tile>().LightOff();
                 }
-              
             }
         }
     }
@@ -149,8 +206,75 @@ public class MapManager : MonoBehaviour
 
         return toReturn;
     }
+
+    public Direction GetDirection(Node origin,Node target)
+    {
+        if(origin.xPos == target.xPos)
+        {
+            if(origin.yPos > target.yPos)
+            {
+                return Direction.Down;
+            }
+            else if(origin.yPos < target.yPos)
+            {
+                return Direction.Up;
+            }
+        }
+        else if(origin.yPos == target.yPos)
+        {
+            if (origin.xPos > target.xPos)
+            {
+                return Direction.Right;
+            }
+            else if (origin.xPos < target.xPos)
+            {
+                return Direction.Left;
+            }
+        }
+     
+        return Direction.NotSpecified;
+    }
+
+    public Node GetNode(Node origin,Direction d,int distance)
+    {
+        Vector2Int offset = Vector2Int.zero;
+
+        switch(d)
+        {
+            case Direction.Up:
+                offset.y = 1;
+                break;
+
+            case Direction.Down:
+                offset.y = -1;
+                break;
+
+            case Direction.Left:
+                offset.x = 1;
+                break;
+
+            case Direction.Right:
+                offset.x = -1;
+                break;
+        }
+
+        offset = offset * distance;
+
+        int newX = origin.xPos + offset.x;
+        int newY = origin.yPos + offset.y;
+
+        if(newX >=0 && newX < width && newY >= 0 && newY < height)
+        {
+            return tiles[origin.xPos + offset.x, origin.yPos + offset.y];
+        }
+        else
+        {
+            return null;
+        }
+    }
 }
 
+[System.Serializable]
 public class Node
 {
     public int xPos;
@@ -161,12 +285,19 @@ public class Node
 
     public bool walkAble;
 
+    public int gCost;
+    public int hCost;
+    public Node parent;
+
+    public List<TileEffect> effects;
+
     public Node(int x, int y, bool walk, GameObject _tile)
     {
         tile = _tile;
         xPos = x;
         yPos = y;
         walkAble = walk;
+        effects = new List<TileEffect>();
     }
 
     public void LightUp()
@@ -188,4 +319,6 @@ public class Node
             return true;
         }
     }
+
+    public int FCost => (gCost + hCost);
 }

@@ -9,31 +9,44 @@ public class TileActions : MonoBehaviour
 
     public bool attacking;
 
+    public bool aiIsPlaying;
+
     private void Awake()
     {
         _MM = FindObjectOfType<MapManager>();
         _GM = FindObjectOfType<GameManager>();
+        aiIsPlaying = false;
     }
 
     public void TileClicked(Transform source,int x,int y)
     {
+        if(aiIsPlaying == true)
+        {
+            return;
+        }
+
         Transform character = GameManager.selected;
 
         if(character == null)
         {
             if(_MM.GetNode(x,y).entity != null)
             {
-                GameManager.Select(_MM.GetNode(x, y).entity.transform);
-                
-                if(GameManager.selected.GetComponent<Entity>().curr_MP > 0)
+                if(_MM.GetNode(x,y).entity.GetComponent<Entity>().myOwner == Owner.Player)
                 {
-                    List<Node> neighbours = _MM.GetNeighbours(GameManager.selected.GetComponent<Entity>().curr_Node);
+                    _MM.UnlitTiles();
 
-                    foreach(Node n in neighbours)
+                    GameManager.Select(_MM.GetNode(x, y).entity.transform);
+
+                    if (GameManager.selected.GetComponent<Entity>().curr_MP > 0)
                     {
-                        if(n.CanBeWalkedOn() == true)
+                        List<Node> neighbours = _MM.GetNeighbours(GameManager.selected.GetComponent<Entity>().curr_Node);
+
+                        foreach (Node n in neighbours)
                         {
-                            n.LightUp();
+                            if (n.CanBeWalkedOn() == true)
+                            {
+                                n.LightUp();
+                            }
                         }
                     }
                 }
@@ -64,11 +77,7 @@ public class TileActions : MonoBehaviour
             {
                 if (_MM.GetNode(x, y).walkAble == true && _MM.GetNode(x, y).entity == null)
                 {
-                    character.GetComponent<Entity>().curr_Node.entity = null;
-                    character.position = clickSource.position;
-                    character.GetComponent<Entity>().curr_Node = _MM.GetNode(x, y);
-                    _MM.GetNode(x, y).entity = character.gameObject;
-                    data.curr_MP--;
+                    data.Move(_MM.GetNode(x, y),false);
 
                     _MM.UnlitTiles();
 
@@ -91,18 +100,30 @@ public class TileActions : MonoBehaviour
         }
     }
 
+
     void AttemptAttack(int x,int y)
     {
-        List<Node> inRange = GameManager.selected.GetComponent<Attack>().GetTargetables();
+        Attack currAttack = GameManager.selected.GetComponent<Attack>();
+
+        List<Node> inRange = currAttack.GetTargetables();
         Node clicked = _MM.GetNode(x, y);
 
         if(inRange.Contains(clicked))
         {
-            if(clicked.entity != null)
+            if(currAttack.allowAttackOnEmpty == false)
+            {
+                if (clicked.entity != null)
+                {
+                    DisableAttacking();
+                   currAttack.Strike(clicked);
+                }
+            }
+            else
             {
                 DisableAttacking();
-                GameManager.selected.GetComponent<Attack>().Strike(clicked);
+                currAttack.Strike(clicked);
             }
+
         }
     }
 

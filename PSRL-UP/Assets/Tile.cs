@@ -26,6 +26,15 @@ public class Tile : EventTrigger
 
     public override void OnPointerDown(PointerEventData eventData)
     {
-        FindObjectOfType<TileActions>().TileClicked(transform,x,y);
+       // FindObjectOfType<TileActions>().TileClicked(transform,x,y);
+    }
+
+    public void OnMouseDown()
+    {
+        if(GameManager.gamePaused != true)
+        {
+            FindObjectOfType<TileActions>().TileClicked(transform, x, y);
+        }
+       
     }
 }

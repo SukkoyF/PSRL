@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4653810803892232807}
   - component: {fileID: 4653810803892232804}
-  - component: {fileID: 1618508933926967052}
+  - component: {fileID: 6628873956808513170}
   m_Layer: 0
   m_Name: Characters_0
   m_TagString: Untagged
@@ -45,11 +45,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c419ae729d0e4b3449f3161b561d6e7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 3
+  health: 2
   maxMP: 3
   curr_MP: 0
+  myOwner: 0
   attacked: 0
---- !u!114 &1618508933926967052
+--- !u!114 &6628873956808513170
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -58,7 +59,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4653810803892232801}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87d1d6fdc4ad6cb42aa7adbc2adbc4e6, type: 3}
+  m_Script: {fileID: 11500000, guid: 471d3412a48b6454da64e87a5daff4b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   attackRange: 3
